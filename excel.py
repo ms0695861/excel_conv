@@ -7,7 +7,7 @@ import os
 
 
 #MTBF form converter
-def MTBF_conv(files):
+def mtbf_conv(files):
     boms = []  
     for bb in files:
         boms.append(bb.get()) #files is dic?
@@ -24,7 +24,6 @@ def MTBF_conv(files):
     num_rows = [5, 3, 2, 1]
     for x in num_rows:
         ws.delete_rows(x)
-    print(ws.max_row)
     ws['A1'] = '名称' 
     ws['B1'] = '零件编号'
     ws['C1'] = '数量'
@@ -39,29 +38,20 @@ def MTBF_conv(files):
     ws['F2'] = '0'
     max_row = ws.max_row
     for i in range(3, max_row + 1):
-        ws.cell(row=i, column=5).value = 'Interposer'
+        ws.cell(row=i, column=5).value = name
         ws.cell(row=i, column=6).value = '1'
     datestring = datetime.strftime(datetime.now(), ' %Y-%m-%d_%H_%M_%S') 
     wb.save(pn+ "_"+ datestring+ '.xlsx')
     os.remove('tmp.xlsx')
 
-# def file_modify(file):
-#     wb = load_workbook(file)
-#     ws = wb.create_sheet()
-#     ws = wb.active
-#     colA = ws['a']
-#     print(len(colA))
-#     for i in range(3, len(colA) + 1):
-#         ws.cell(row=i, column=5).value = 'Interposer'
-#         ws.cell(row=i, column=6).value = '1'
-#     wb.save('newfile.xlsx')
-        
-#choose the file in
+def clear_text(entries):
+    entries[0].delete(0, 'end')
+    entries[1].delete(0, 'end')
+    entries[2].delete(0, 'end')
+
 def openfile(ent):
-    # bom_conv.withdraw()
     file_in = filedialog.askopenfilename(filetypes = (("Excel 97-2003","*.xls"),("all files","*.*")))
     ent.insert(0, file_in) 
-
 
 def makeform(root, feilds):
     rows = []
@@ -84,10 +74,8 @@ def main():
     bom_conv.title('BOM converter')
     BOM_IN = ['BOM_IN', 'Part Number', 'Name']
     BOM = makeform(bom_conv, BOM_IN)
-    BOM_CONV = Button(bom_conv, text = 'BOM Convert', fg='#000079', bg='#66B3FF', font=('Arial', 12), 
-                      command= lambda:MTBF_conv(BOM)).pack(side = BOTTOM)
-    # result = MTBF_conv(BOM)
-    # file_add(result)
+    BOM_CONV = Button(bom_conv, text = 'BOM MTBF Convert', fg='#000079', bg='#66B3FF', font=('Arial', 12), 
+                      command= lambda:[mtbf_conv(BOM), clear_text(BOM)]).pack(side = BOTTOM)
     bom_conv.mainloop()
 
 if __name__ == "__main__":
